@@ -7,8 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "minify": "uglifyjs ./instantpage.js --compress --mangle --toplevel --comments \"/^!/\" --output ./instantpage.min.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild instantpage.js --target=es6 --minify --bundle --format=esm --entry-names=[name].[hash] --outfile=./dist/instantpage.js --manifest --drop:console --drop:debugger",
+    "test": "node test/app.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,6 @@
   },
   "homepage": "https://instant.page/",
   "devDependencies": {
-    "terser": "^5.14.1"
+    "esbuild": "^0.14.43"
   }
 }
