@@ -51,79 +51,113 @@ function sha384(data) {
   return hash.digest('base64')
 }
 
+
+let ID = 0;
+
 async function requestListener(req, res) {
-  handleCookies(req)
+  handleCookies(req);
 
   let headers = {
     'Content-Type': 'text/html',
-  }
+  };
 
-  let pathString = req.url.substr(1)
-  let page = parseInt(pathString)
+  let pathString = req.url.substr(1);
+  let page = parseInt(pathString);
   if (pathString == '') {
-    page = 1
+    page = 1;
   }
 
-  let content = ''
+  let content = '';
 
-  const jsContent = await fsPromises.readFile(path.resolve(__dirname, `../${USE_MINIFIED ? 'instantpage.min.js' : 'instantpage.js'}`))
-  const jsHash = sha384(jsContent)
+  const jsContent = await fsPromises.readFile(
+    path.resolve(
+      __dirname,
+      `../${USE_MINIFIED ? 'instantpage.min.js' : 'instantpage.js'}`
+    )
+  );
+  const jsHash = sha384(jsContent);
 
-  if (pathString == 'instantpage.js') {
-    headers['Content-Type'] = 'text/javascript'
-    content += jsContent
-  }
-  else if (!isNaN(page)) {
-    await sleep(SLEEP_TIME)
+  if (pathString.includes('instantpage')) {
+    headers['Content-Type'] = 'text/javascript';
+    content += jsContent;
+  } else if (!isNaN(page)) {
+    // to check request-in-flight usage of browsers
+    ++ID;
+    headers['x-id'] = ID;
+    console.log(`${new Date().toString()} ID`, ID, req.headers.purpose);
+
+    await sleep(SLEEP_TIME);
 
     if (CACHE_MAX_AGE) {
-      headers['Cache-Control'] = `max-age=${CACHE_MAX_AGE}`
+      headers['Cache-Control'] = `max-age=${CACHE_MAX_AGE}`;
     }
 
-    content += await fsPromises.readFile(path.resolve(__dirname, 'header.html'))
+    content += await fsPromises.readFile(
+      path.resolve(__dirname, 'header.html')
+    );
 
     if (ALLOW_QUERY_STRING_AND_EXTERNAL_LINKS) {
-      content = content.replace('<body>', '<body data-instant-allow-query-string data-instant-allow-external-links>')
+      content = content.replace(
+        '<body>',
+        '<body data-instant-allow-query-string data-instant-allow-external-links>'
+      );
     }
     if (USE_WHITELIST) {
-      content = content.replace('<body', '<body data-instant-whitelist')
+      content = content.replace('<body', '<body data-instant-whitelist');
+    } else if (INTENSITY != 65) {
+      content = content.replace(
+        '<body',
+        `<body data-instant-intensity="${INTENSITY}"`
+      );
     }
-    else if (INTENSITY != 65) {
-      content = content.replace('<body', `<body data-instant-intensity="${INTENSITY}"`)
-    }
-    dataInstantAttribute = !ALLOW_QUERY_STRING_AND_EXTERNAL_LINKS || USE_WHITELIST ? `data-instant` : ``
+    dataInstantAttribute = '';
+    // dataInstantAttribute =
+    //   !ALLOW_QUERY_STRING_AND_EXTERNAL_LINKS || USE_WHITELIST
+    //     ? `data-instant`
+    //     : ``;
 
-    content = content.replace(':checked_aqsael', ALLOW_QUERY_STRING_AND_EXTERNAL_LINKS ? 'checked' : '')
-    content = content.replace(':checked_whitelist', USE_WHITELIST ? 'checked' : '')
-    content = content.replace(':value_sleep', `value="${SLEEP_TIME}"`)
-    content = content.replace(':value_cacheAge', `value="${CACHE_MAX_AGE}"`)
-    content = content.replace(':value_intensity', `value="${INTENSITY}"`)
-    content = content.replace(':checked_minified', USE_MINIFIED ? 'checked' : '')
+    content = content.replace(
+      ':checked_aqsael',
+      ALLOW_QUERY_STRING_AND_EXTERNAL_LINKS ? 'checked' : ''
+    );
+    content = content.replace(
+      ':checked_whitelist',
+      USE_WHITELIST ? 'checked' : ''
+    );
+    content = content.replace(':value_sleep', `value="${SLEEP_TIME}"`);
+    content = content.replace(':value_cacheAge', `value="${CACHE_MAX_AGE}"`);
+    content = content.replace(':value_intensity', `value="${INTENSITY}"`);
+    content = content.replace(
+      ':checked_minified',
+      USE_MINIFIED ? 'checked' : ''
+    );
 
-    content += `<h1>Page ${page}</h1>`
-    for (let i = 1; i <= 3; i++) {
+    content += `<h1>Page ${page}</h1>`;
+    for (let i = 1; i <= 5; i++) {
       if (page != i) {
-        content += `<a href="/${i}?${Math.random()}" ${dataInstantAttribute}><span>Page ${i}</span></a>`
+        content += `<a href="/${i}-${Math.random()}" ${dataInstantAttribute}><span>Page ${i}</span></a>`;
       }
     }
 
-    content += `<a href="/${page}?${Math.random()}" target="_blank" ${dataInstantAttribute}><span>Opens in a new tab</span></a>`
-    content += `<a href="/${page}?${Math.random()}#anchor" ${dataInstantAttribute}><span>Other page anchor</span></a>`
-    content += `<a href="${req.url}#anchor" id="anchor"><span>Same-page anchor</span></a>`
-    content += `<a href="/${page}?${Math.random()}" data-no-instant><span>Manually blacklisted link</span></a>`
-    content += `<a href="/${page}?${Math.random()}"><span>Non-whitelisted link</span></a>`
-    content += `<a href="https://www.google.com/" ${dataInstantAttribute}><span>External link</span></a>`
-    content += `<a><span>&lt;a&gt; without <code>href</code></span></a>`
-    content += `<a href="file:///C:/"><span>file: link</span></a>`
+    content += `<a href="/${page}-${Math.random()}" target="_blank" ${dataInstantAttribute}><span>Opens in a new tab</span></a>`;
+    content += `<a href="/${page}-${Math.random()}#anchor" ${dataInstantAttribute}><span>Other page anchor</span></a>`;
+    content += `<a href="${req.url}#anchor" id="anchor"><span>Same-page anchor</span></a>`;
+    content += `<a href="/${page}-${Math.random()}" data-no-instant><span>Manually blacklisted link</span></a>`;
+    content += `<a href="/${page}-${Math.random()}"><span>Non-whitelisted link</span></a>`;
+    content += `<a href="https://www.google.com/" ${dataInstantAttribute}><span>External link</span></a>`;
+    content += `<a><span>&lt;a&gt; without <code>href</code></span></a>`;
+    content += `<a href="file:///C:/"><span>file: link</span></a>`;
 
-    let footer = await fsPromises.readFile(path.resolve(__dirname, 'footer.html'))
-    footer = footer.toString().replace('__HASH__', jsHash)
-    content += footer
+    let footer = await fsPromises.readFile(
+      path.resolve(__dirname, 'footer.html')
+    );
+    footer = footer.toString().replace('__HASH__', jsHash);
+    content += footer;
   }
 
-  res.writeHead(200, headers)
-  res.write(content)
-  res.end()
+  res.writeHead(200, headers);
+  res.write(content);
+  res.end();
 }
 
 http.createServer(requestListener).listen(PORT)
