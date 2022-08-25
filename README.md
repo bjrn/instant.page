@@ -1,5 +1,7 @@
 # instant.page
 
+> **Note** This is a slightly modified version of the [original instant.page script](https://github.com/instantpage/instant.page). The main differences are that configuration via <body> attributes has been removed and `mousedown=true` by default.
+
 **Make your site’s pages instant in 1 minute and improve your conversion rate by 1%.**
 
 :information_source: Info is on [the website](https://instant.page).
