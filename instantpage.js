@@ -250,7 +250,7 @@ function isPreloadable(linkElement, ignoreUrlCheck) {
 
 function preload(url) {
   if (prefetches.has(url)) {
-    console.log('prefetch.exists', url, prefetches.size);
+    // console.log('prefetch.exists', url, prefetches.size);
     return;
   }
 
@@ -260,5 +260,5 @@ function preload(url) {
   document.head.appendChild(prefetcher);
 
   prefetches.add(url);
-  console.log(`prefetch.add: ${url}`);
+  // console.log(`prefetch.add: ${url}`);
 }

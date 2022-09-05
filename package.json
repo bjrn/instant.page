@@ -1,13 +1,13 @@
 {
   "name": "near-instant.page",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Make your site’s pages instant in 1 minute and improve your conversion rate by 1%",
   "main": "instantpage.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "minify": "esbuild instantpage.js --target=es6 --minify --bundle --format=esm --entry-names=[name] --outfile=./instantpage.min.js --drop:console --drop:debugger",
+    "minify": "esbuild instantpage.js --target=es6 --minify --bundle --format=iife --entry-names=[name] --outfile=./instantpage.min.js --drop:console --drop:debugger",
     "test": "node test/app.js"
   },
   "repository": {
