@@ -1,12 +1,12 @@
-# instant.page
+# near-instant.page
 
-> **Note** This is a slightly modified version of the [original instant.page script](https://github.com/instantpage/instant.page). The main differences are that configuration via <body> attributes has been removed and `mousedown=true` by default.
+> **Note** This is a slightly modified version of the [original instant.page script](https://www.npmjs.com/package/instant.page). The main differences are that configuration via `<body>` attributes has been removed and `mousedown=true` by default. Still possible to disable preloading on individual links via `<a data-no-instant href="...">`.
 
 **Make your site’s pages instant in 1 minute and improve your conversion rate by 1%.**
 
 :information_source: Info is on [the website](https://instant.page).
 
-:scroll: The source is in [instantpage.js](https://github.com/instantpage/instant.page/blob/master/instantpage.js).
+:scroll: The original source is in [instantpage.js](https://github.com/instantpage/instant.page/blob/master/instantpage.js).
 
 :star2: Star this repository to follow its development.
 
@@ -14,10 +14,10 @@
 
 With [Node](https://nodejs.org/), run:
 
-`node test/app.js`
+`npm run test` (or `node test/app.js`)
 
 And access http://127.0.0.1:8000/. Or specify another port with an argument after the filename.
 
 ## Minifying
 
-To minify instantpage.js into instantpage.min.js install uglify-es globally (`npm i uglify-es -g`) then run `npm run minify`.
+To minify `instantpage.js` into `instantpage.min.js`, run `npm run minify`.
