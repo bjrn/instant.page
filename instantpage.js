@@ -200,6 +200,11 @@ function isPreloadable(linkElement, ignoreUrlCheck) {
     return false;
   }
 
+  // ignore links with an <a data-no-instant href="..."> attribute
+  if ('noInstant' in linkElement.dataset) {
+    return false;
+  }
+
   if (
     (!ignoreUrlCheck && prefetches.has(href)) ||
     href.charCodeAt(0) === 35 // #
@@ -240,7 +245,7 @@ function isPreloadable(linkElement, ignoreUrlCheck) {
   ) {
     return false;
   }
-  // if ('noInstant' in linkElement.dataset) return false;
+
   if (linkElement.getAttribute('download') !== null) {
     return false;
   }
