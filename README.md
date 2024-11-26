@@ -1,8 +1,8 @@
 # near-instant.page
 
-> **Note** This is a slightly modified version of the [original instant.page script](https://www.npmjs.com/package/instant.page). The main differences are that configuration via `<body>` attributes has been removed and `mousedown=true` by default. Still possible to disable preloading on individual links via `<a data-no-instant href="...">`.
-
-**Make your site’s pages instant in 1 minute and improve your conversion rate by 1%.**
+> **Note** This is a slightly modified version of the [original instant.page script](https://www.npmjs.com/package/instant.page). The main differences are that configuration via `<body>` attributes has been removed and `mousedown=true` by default. 
+>
+> Disable preloading on individual links with `<a href="..." data-no-instant>…</a>`.
 
 :information_source: Info is on [the website](https://instant.page).
 
